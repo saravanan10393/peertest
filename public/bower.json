@@ -1,0 +1,24 @@
+{
+  "name": "peerjs",
+  "authors": [
+    "Saravanan <saravanan.ramupillai@orangescape.com>"
+  ],
+  "description": "sample peerjswork",
+  "main": "index.html",
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "angularjs#^1.5.8",
+    "angular-route": "^1.5.8",
+    "angular-tiny-eventemitter": "^1.2.0",
+    "lodash": "^4.16.2",
+    "font-awesome": "^4.6.3"
+  }
+}
