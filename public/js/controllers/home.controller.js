@@ -87,7 +87,8 @@
         };
 
         vm.getCaleeName = function(){
-
+            var userId = vm.currentCall.outgoing ? vm.currentCall.to.id : vm.currentCall.from.id;
+            return vm.getUserNameById(userId);
         };
 
         $scope.$on('call:localStream',function(evt, stream){
