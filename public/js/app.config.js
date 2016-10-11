@@ -23,7 +23,7 @@
         //$locationProvider.html5Mode(true);
 
     }).constant('urls',{
-        apiUrl : 'http://localhost:3000/api/',
-        socketUrl : 'http://localhost:3000'
+        apiUrl : 'https://simple-av.herokuapp.com/api/',
+        socketUrl : 'https://simple-av.herokuapp.com'
     })
 })();
