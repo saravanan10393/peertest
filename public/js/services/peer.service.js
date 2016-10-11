@@ -5,34 +5,43 @@
         .module('peerApp.services')
         .service('peerService', PeerService);
 
-    var peerstreams = [], localstream, peer;
+    var peerstreams = [], localstream, peer, mediaConnection;
 
     PeerService.$inject = ['$http', 'socketService', 'userService','$rootScope'];
     function PeerService($http, socket, userService, $rootScope) {
         this.peerstreams = peerstreams;
         this.localStream = localstream;
         var that = this;
-        initPeer(userService.currentUser.id, $rootScope);
 
+        this.init = function(){
+            initPeer(userService.currentUser.id, $rootScope);
+        };
+        
         this.call = function (to) {
             getStream({}, function (stream) {
                 that.localStream = URL.createObjectURL(stream);
+                localstream = stream;
                 console.log('create object url ',that.localStream);
-                $rootScope.$broadcast('call:localStream',stream);
-                var mediaConnection = peer.call(to, stream);
+                mediaConnection = peer.call(to, stream);
                 initializeMediaStream(mediaConnection, $rootScope);
+                $rootScope.$broadcast('call:localStream',stream);
             });
         };
 
         this.answer = function (to) {
-
+            
         };
 
         this.cut = function (call) {
             this.peerstreams = [];
+            peerstreams = [];
+            stopLocalStream();
+            mediaConnection.close();
+            mediaConnection = null;
         };
 
         socket.on('disconnect', function () {
+            peerstreams = [];
             peer.disconnect();
         });
     }
@@ -73,7 +82,7 @@
 
         peer.on('disconnected', function () {
             console.warn('peer is disconnected from peer server. attempting to reconnect');
-            peer.reconnect();
+            //peer.reconnect();
         });
 
         peer.on('error', function (err) {
@@ -83,16 +92,24 @@
         peer.on('call', function (mediaConnection) {
             getStream({}, handleMediaConnection);
             function handleMediaConnection(stream) {
-                mediaConnection.answer(localstream);
+                localstream = stream;
+                mediaConnection.answer(stream);
                 initializeMediaStream(mediaConnection, $rootScope);
-                //emit localstream
                 $rootScope.$broadcast('call:localStream', stream);
+                //emit localstream
             }
         });
     }
 
-    function initializeMediaStream(mediaConnection, $rootScope){
+    function stopLocalStream(){
+        localstream.getTracks().forEach(function(track){
+            track.stop();
+        });
+    }
+
+    function initializeMediaStream(incommingConnection, $rootScope){
         console.log('initializeMediaStream is called');
+        mediaConnection = incommingConnection;
         mediaConnection.on('stream', function (remoteStream) {
             console.log('onstream is called');
             if (_.find(peerstreams, { id: mediaConnection.peer })) {
@@ -111,9 +128,17 @@
 
         mediaConnection.on('close',function(evt){
             console.log('mediaConnection  onClose ',evt);
+            peerstreams = [];
+            stopLocalStream();
+            //close the local media connection
+            mediaConnection.close();
+            mediaConnection = null;
+            $rootScope.$broadcast('call:end',evt);
         });
 
         mediaConnection.on('error',function(err){
+            peerstreams = [];
+            stopLocalStream();
             console.log('mediaConnection  onError ',err);
         });
     }

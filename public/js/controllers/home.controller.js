@@ -11,12 +11,16 @@
 
         vm.userList = [];
 
-        vm.peerService = peerService;
+       
 
         if (!userService.currentUser) {
             $location.path('/');
             return;
         }
+
+        vm.currentUser = userService.currentUser;
+
+        peerService.init();
 
         vm.currentCall = {
             incomming: false,
@@ -27,25 +31,39 @@
         };
 
         socket.connect(userService.currentUser.id);
-
+        
         vm.call = function (user) {
             vm.currentCall.outgoing = true;
             vm.currentCall.to = user;
-            delete vm.currentCall.from;
             socket.emit('call', { to: user.id, from: userService.currentUser.id }, function (isUserAttendCall) {
                 console.log(isUserAttendCall);
             });
             vm.showCallPopup();
         };
 
-        vm.cut = function () {
+        vm.cutCall = function () {
             var informTo = vm.currentCall.outgoing ? vm.currentCall.to.id : vm.currentCall.from.id;
-            socket.emit('cutCall', { to: informTo, who: userService.currentUser.id });
+            socket.emit('endCall', { to: informTo, who: userService.currentUser.id });
             vm.currentCall = {};
+            vm.localStream = null;
+            peerService.cut();
         };
 
         vm.mute = function () {
             //todo mute the local stream;
+        };
+
+        vm.logout = function(){
+            if(vm.currentCall.incomming || vm.currentCall.outgoing){
+                vm.cutCall();                
+            }
+            userService.currentUser = null;
+            socket.disconnect();
+            $location.path('/');
+        };
+
+        vm.checkUserIsBusy = function(){
+            return vm.currentCall.incomming || vm.currentCall.outgoing;
         };
 
         vm.showCallPopup = function (incommingCall) {
@@ -60,14 +78,17 @@
 
         vm.attendCall = function () {
             socket.emit('attendedCall', { to: vm.currentCall.from.id, who: userService.currentUser.id });
-        }
+        };
 
-        vm.getCalleName = function () {
-            if (vm.currentCall.incomming)
-                return vm.currentCall.from.name;
-            else
-                return vm.currentCall.to.name;
-        }
+        vm.getUserNameById = function(id){
+            return _.find(vm.userList,function(user){
+                return user.id == id;
+            }).name;
+        };
+
+        vm.getCaleeName = function(){
+
+        };
 
         $scope.$on('call:localStream',function(evt, stream){
             vm.localStream = URL.createObjectURL(stream);
@@ -79,6 +100,12 @@
             vm.remoteStreams = streams;
             $scope.$apply();
             console.log('remote stream ',vm.remoteStreams);
+        });
+
+        $scope.$on('call:end',function(evt, streams){
+            vm.localStream = null;
+            vm.remoteStreams = [];
+            console.log('call end ');
         });
 
         socket.on('userList', function (onlineUsers) {
@@ -108,7 +135,6 @@
             vm.currentCall.incomming = true;
             vm.currentCall.outgoing = false;
             vm.currentCall.from = _.find(vm.userList, { id: incommingCall.from });
-            delete vm.currentCall.to;
             $scope.$apply();
             vm.showCallPopup();
         });
@@ -123,7 +149,8 @@
         });
 
         socket.on('cutCall', function (data) {
-            $.toaster({ priority: 'info', title: 'message', message: 'User cut call' });
+            var message = vm.getUserNameById(data.who) + "Cut the call";
+            $.toaster({ priority: 'info', title: 'message', message: message });
             //user cut call
             //check remote stream length. if it is 0 then cut the call else remove remote stream for that user
         });
@@ -134,10 +161,16 @@
             setTimeout(function () {
                 $('#callmodel').modal('hide');
                 vm.currentCall = {};
-            }, 2000)
+            }, 3000);
             $scope.$apply();
-
         });
 
+        socket.on('endCall',function(data){
+            var message = vm.getUserNameById(data.who) + "Cut the call";
+            $.toaster({ priority: 'info', title: 'message', message: message });
+            vm.currentCall = {};
+            peerService.cut();
+            $scope.$apply();
+        });
     }
 })();                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           

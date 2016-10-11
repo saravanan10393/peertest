@@ -8,6 +8,7 @@
         <li><a href="">Page 2</a></li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
+        <li>welcome {{Peer.currentUser.name}}</li>
         <li><a href="" ng-click="Peer.logout()"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
     </ul>
 </nav>
@@ -16,11 +17,14 @@
     <div class="col-md-3">
         <ul class="userlist">
             <li class="heading">
-                User List
+                Online Users
             </li>
             <li class="user item" ng-repeat="user in Peer.userList">
                 <div class="name"><span ng-bind="user.name"></span></div>
-                <div class="call" ng-click="Peer.call(user)">
+                <div class="call" ng-hide="Peer.currentCall.incomming" ng-click="Peer.call(user)">
+                    <a href=""><i class="fa fa-phone" aria-hidden="true"></i></a>
+                </div>
+                <div class="call red" ng-show="Peer.currentCall.incomming" ng-click="Peer.cut()">
                     <a href=""><i class="fa fa-phone" aria-hidden="true"></i></a>
                 </div>
             </li>
@@ -33,8 +37,11 @@
         </div>
     </div>
     <div class="col-md-9 remotestreams">
-        <div class="col-md-6 remotestream" ng-repeat="stream in Peer.remoteStreams">
+        <div class="col-md-12 remotestream" ng-repeat="stream in Peer.remoteStreams">
            <div class="videocontainer" video-src="{{stream.url}}">
+           </div>
+           <div class="round red cutbutton" data-ng-click="Peer.cutCall()">
+                <a href=""><i class="fa fa-phone" aria-hidden="true"></i></a>
            </div>
         </div>
     </div>

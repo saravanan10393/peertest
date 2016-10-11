@@ -57,6 +57,10 @@
                 (ack || angular.noop)(data);
             });
         };
+
+        this.disconnect = function(){
+            connection.disconnect();
+        };
     };
 
 })();

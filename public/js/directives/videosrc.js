@@ -4,7 +4,7 @@ angular.module('peerApp').directive('videoSrc', function () {
             attr.$observe('videoSrc', function (value) {
                 if(!value) return;
                 var container = $(elem).empty();
-                var videoElem = $('<video autoplay width="150px" height="150px"></video>');
+                var videoElem = $('<video autoplay style="width:100%;height:100%"></video>');
                 videoElem.attr('src',attr.videoSrc);
                 container.append(videoElem);
             });
