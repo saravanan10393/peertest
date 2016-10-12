@@ -74,7 +74,7 @@
 
     function initPeer(id, $rootScope) {
         id = id || Math.random() * 100000;
-        peer = new Peer(id, { key: "2wdzltj1qacnb3xr", debug: 3 });
+        peer = new Peer(id, {host: "https://peercli.herokuapp.com", path:"/"}); // { key: "2wdzltj1qacnb3xr", debug: 3 }
 
         peer.on('open', function () {
             console.info('peer is connected to peer server');

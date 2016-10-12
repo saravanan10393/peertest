@@ -23,7 +23,7 @@
         //$locationProvider.html5Mode(true);
 
     }).constant('urls',{
-        apiUrl : 'http://simple-av.herokuapp.com/api/',
-        socketUrl : 'http://simple-av.herokuapp.com'
+        apiUrl : 'https://simple-av.herokuapp.com/api/',
+        socketUrl : 'https://simple-av.herokuapp.com'
     })
 })();
