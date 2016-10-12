@@ -1,6 +1,10 @@
 # peertest
 simple one-to-one audio/video call app using PeerJs.
 
+you can find a workign example here : 
+
+https://simple-av.herokuapp.com
+
 #How to set up:
   1. Clone Repo
   2. npm install
