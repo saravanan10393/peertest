@@ -24,6 +24,6 @@
 
     }).constant('urls',{
         apiUrl : 'https://simple-av.herokuapp.com/api/',
-        socketUrl : 'https://simple-av.herokuapp.com'
+        socketUrl : 'simple-av.herokuapp.com'
     })
 })();
