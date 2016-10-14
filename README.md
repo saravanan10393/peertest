@@ -15,7 +15,7 @@ https://simple-av.herokuapp.com
 
 #Contributions are welcome
 
-Task that need to be done
+Tasks that need to be done
 
 1. Better UX design
 2. Implement persional contacts list and remove open user call
